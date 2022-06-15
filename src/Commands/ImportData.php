@@ -6,7 +6,6 @@ use Illuminate\Console\Command;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Log;
 use Wovosoft\BdGeocode\Models\District;
 use Wovosoft\BdGeocode\Models\Division;
 use Wovosoft\BdGeocode\Models\Union;

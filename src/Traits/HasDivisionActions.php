@@ -67,13 +67,7 @@ trait HasDivisionActions
 
     public function options(Request $request): Collection|array
     {
-        return Division::query()
-            ->when($request->input("filter"), function (Builder $builder, string $filter) {
-                $builder->search($filter);
-            })
-            ->select($request->input("cols") ?? ["id", "name", "bn_name", "url"])
-            ->limit($request->input("limit") ?? 25)
-            ->get();
+        return Data::totOptions(Division::query()->select($request->input("cols") ?? ["id", "name", "bn_name", "url"]), $request);
     }
 
     public function index(Request $request): LengthAwarePaginator
@@ -82,7 +76,6 @@ trait HasDivisionActions
             ->when($request->input("filter"), function (Builder $builder, string $filter) {
                 $builder->search($filter);
             })
-            ->select($request->input("cols") ?? ["*"])
             ->paginate(
                 perPage: $request->input("per_page") ?? 15,
                 page: $request->input("current_page") ?? 1

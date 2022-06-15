@@ -28,11 +28,6 @@ class Division extends Model
         return parent::__get($key);
     }
 
-    public function bal(): Attribute
-    {
-        return Attribute::get(fn() => "Bal Obtained");
-    }
-
     public function toSearchableArray(): array
     {
         return [
