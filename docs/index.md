@@ -2,7 +2,7 @@
 layout: home
 
 hero:
-  name: Bangladesh GEO Address Provider
+  name: Bangladesh Geographical Address Provider
   text: ... for Laravel Projects.
   tagline: This Package is Made for Laravel Related Projects.
   actions:
