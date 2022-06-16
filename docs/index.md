@@ -4,7 +4,7 @@ layout: home
 hero:
   name: Bangladesh Geographical Address Provider
   text: ... for Laravel Projects.
-  tagline: This Package is Made for Laravel Related Projects.
+  tagline: This Package is Made for Laravel Related Projects by Wovosoft.
   actions:
     - theme: brand
       text: Get Started
