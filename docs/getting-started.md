@@ -13,6 +13,14 @@ Via Composer
 composer require wovosoft/bd-geocode
 ```
 
+## Publish Migrations
+
+If you need to modify default migrations, then run
+
+```shell
+php artisan vendor:publish --tag=bd-geocode.migrations
+```
+
 ## Run Migration
 
 ```shell

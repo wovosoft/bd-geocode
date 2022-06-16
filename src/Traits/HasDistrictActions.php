@@ -107,19 +107,9 @@ trait HasDistrictActions
         }
     }
 
-    /**
-     * Returns Division of a District
-     * Note: Fetching Data in single query
-     * @param $district
-     * @return Division|null
-     */
-    public function division($district): ?Division
+    public function division(District $district): ?Division
     {
-        return District::query()
-            ->select(['id', 'division_id'])
-            ->with(['division'])
-            ->findOrFail($district)
-            ?->division;
+        return $district->division;
     }
 
     public function upazilas(District $district, Request $request): Collection

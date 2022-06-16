@@ -5,27 +5,46 @@
 [![Build Status][ico-travis]][link-travis]
 [![StyleCI][ico-styleci]][link-styleci]
 
-This is where your description should go. Take a look at [contributing.md](contributing.md) to see a to do list.
-
 ## Installation
 
 Via Composer
 
-``` bash
-$ composer require wovosoft/bd-geocode
+```shell
+composer require wovosoft/bd-geocode
 ```
 
-## Usage
+## Publish Migrations
 
-## Change log
+If you need to modify default migrations, then run
 
-Please see the [changelog](changelog.md) for more information on what has changed recently.
-
-## Testing
-
-``` bash
-$ composer test
+```shell
+php artisan vendor:publish --tag=bd-geocode.migrations
 ```
+
+## Run Migration
+
+```shell
+php artisan migrate
+```
+
+## Clone Data
+
+Run the bellow command to clone data
+from [https://github.com/nuhil/bangladesh-geocode](https://github.com/nuhil/bangladesh-geocode)
+to `storage_path('app/public/bangladesh-geocode')` . You can delete this folder after data seeding is completed.
+
+```shell 
+php artisan bd-geocode:clone-data
+```
+
+## Import Data to Database
+
+Run the bellow command to import the cloned data to database.
+
+```shell
+php artisan bd-geocode:import-data
+```
+
 
 ## Contributing
 
@@ -33,16 +52,24 @@ Please see [contributing.md](contributing.md) for details and a todolist.
 
 ## Security
 
-If you discover any security related issues, please email author@email.com instead of using the issue tracker.
+If you discover any security related issues, please email wovosoft@email.com instead of using the issue tracker.
 
 ## Credits
 
-- [Author Name][link-author]
+- [Narayan Adhikary](https://github.com/wovosoft)
 - [All Contributors][link-contributors]
 
 ## License
 
 MIT. Please see the [license file](license.md) for more information.
+
+## Courtesy
+
+The package uses the data from
+[https://github.com/nuhil/bangladesh-geocode](https://github.com/nuhil/bangladesh-geocode)
+
+Special thanks to the Author of the package for his awesome job.
+
 
 [ico-version]: https://img.shields.io/packagist/v/wovosoft/bd-geocode.svg?style=flat-square
 [ico-downloads]: https://img.shields.io/packagist/dt/wovosoft/bd-geocode.svg?style=flat-square

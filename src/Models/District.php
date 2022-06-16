@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Laravel\Scout\Searchable;
 
 class District extends Model
@@ -30,7 +31,7 @@ class District extends Model
         return $this->hasMany(Upazila::class);
     }
 
-    public function unions()
+    public function unions(): HasManyThrough
     {
         return $this->hasManyThrough(
             Union::class,

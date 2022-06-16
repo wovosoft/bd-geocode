@@ -63,78 +63,92 @@ class BdGeocode
         };
     }
 
-    public static function routes(): void
+    public static function routes(
+        ?string $divisionController = DivisionController::class,
+        ?string $districtController = DistrictController::class,
+        ?string $upazilaController = UpazilaController::class,
+        ?string $unionController = UnionController::class
+    ): void
     {
-        Route::prefix("/geocode")->name("geocode.")->group(function () {
-            //name : geocode.divisions.{index,store,update,destroy,options,districts,upazilas,unions}
+        Route::prefix("/geocode")->name("geocode.")
+            ->group(function () use ($unionController, $upazilaController, $districtController, $divisionController) {
+                //name : geocode.divisions.{index,store,update,destroy,options,districts,upazilas,unions}
 
-            Route::controller(DivisionController::class)
-                ->prefix("divisions")
-                ->name("divisions.")
-                ->group(function () {
-                    Route::post("/", "index")->name("index");
-                    Route::put("/store", "store")->name("store");
-                    Route::put("/update/{division}", "update")->name("update");
-                    Route::delete("/destroy/{division}", "destroy")->name("destroy");
-                    Route::post("/options", "options")->name("options");
-                    Route::post("/{division}/districts", "districts")->name("districts");
-                    Route::post("/{division}/upazilas", "upazilas")->name("upazilas");
-                    Route::post("/{division}/unions", "unions")->name("unions");
+                if ($divisionController) {
+                    Route::controller($divisionController)
+                        ->prefix("divisions")
+                        ->name("divisions.")
+                        ->group(function () {
+                            Route::post("/", "index")->name("index");
+                            Route::put("/store", "store")->name("store");
+                            Route::put("/update/{division}", "update")->name("update");
+                            Route::delete("/destroy/{division}", "destroy")->name("destroy");
+                            Route::post("/options", "options")->name("options");
+                            Route::post("/{division}/districts", "districts")->name("districts");
+                            Route::post("/{division}/upazilas", "upazilas")->name("upazilas");
+                            Route::post("/{division}/unions", "unions")->name("unions");
 
-                });
+                        });
+                }
 
-            //name : geocode.districts.{index,store,update,destroy,options,upazilas,unions,division}
-            Route::controller(DistrictController::class)
-                ->prefix("districts")
-                ->name("districts.")
-                ->group(function () {
-                    Route::post("/", "index")->name("index");
-                    Route::put("/store", "store")->name("store");
-                    Route::put("/update/{district}", "update")->name("update");
-                    Route::delete("/destroy/{district}", "destroy")->name("destroy");
-                    Route::post("/options", "options")->name("options");
-
-
-                    Route::post("/{district}/upazilas", "upazilas")->name("upazilas");
-                    Route::post("/{district}/unions", "unions")->name("unions");
-                    Route::post("/{district}/division", "division")->name("division");
-
-                });
-
-            //name : geocode.upazilas.{index,store,update,destroy,options,division,district,unions}
-            Route::controller(UpazilaController::class)
-                ->prefix("upazilas")
-                ->name("upazilas.")
-                ->group(function () {
-                    Route::post("/", "index")->name("index");
-                    Route::put("/store", "store")->name("store");
-                    Route::put("/update/{upazila}", "update")->name("update");
-                    Route::delete("/destroy/{upazila}", "destroy")->name("destroy");
-                    Route::post("/options", "options")->name("options");
+                //name : geocode.districts.{index,store,update,destroy,options,upazilas,unions,division}
+                if ($districtController) {
+                    Route::controller($districtController)
+                        ->prefix("districts")
+                        ->name("districts.")
+                        ->group(function () {
+                            Route::post("/", "index")->name("index");
+                            Route::put("/store", "store")->name("store");
+                            Route::put("/update/{district}", "update")->name("update");
+                            Route::delete("/destroy/{district}", "destroy")->name("destroy");
+                            Route::post("/options", "options")->name("options");
 
 
-                    Route::post("/{upazila}/division", "division")->name("division");
-                    Route::post("/{upazila}/district", "district")->name("district");
-                    Route::post("/{upazila}/unions", "unions")->name("unions");
+                            Route::post("/{district}/upazilas", "upazilas")->name("upazilas");
+                            Route::post("/{district}/unions", "unions")->name("unions");
+                            Route::post("/{district}/division", "division")->name("division");
 
-                });
+                        });
+                }
 
-            //name : geocode.unions.{index,store,update,destroy,options,unions,district,division}
-            Route::controller(UnionController::class)
-                ->prefix("unions")
-                ->name("unions.")
-                ->group(function () {
-                    Route::post("/", "index")->name("index");
-                    Route::put("/store", "store")->name("store");
-                    Route::put("/update/{union}", "update")->name("update");
-                    Route::delete("/destroy/{union}", "destroy")->name("destroy");
-                    Route::post("/options", "options")->name("options");
+                //name : geocode.upazilas.{index,store,update,destroy,options,division,district,unions}
+                if ($upazilaController) {
+                    Route::controller($upazilaController)
+                        ->prefix("upazilas")
+                        ->name("upazilas.")
+                        ->group(function () {
+                            Route::post("/", "index")->name("index");
+                            Route::put("/store", "store")->name("store");
+                            Route::put("/update/{upazila}", "update")->name("update");
+                            Route::delete("/destroy/{upazila}", "destroy")->name("destroy");
+                            Route::post("/options", "options")->name("options");
 
 
-                    Route::post("/{union}/division", "division")->name("division");
-                    Route::post("/{union}/district", "district")->name("district");
-                    Route::post("/{union}/upazila", "upazila")->name("upazila");
-                });
-        });
+                            Route::post("/{upazila}/division", "division")->name("division");
+                            Route::post("/{upazila}/district", "district")->name("district");
+                            Route::post("/{upazila}/unions", "unions")->name("unions");
+
+                        });
+                }
+
+                //name : geocode.unions.{index,store,update,destroy,options,unions,district,division}
+                if ($unionController) {
+                    Route::controller($unionController)
+                        ->prefix("unions")
+                        ->name("unions.")
+                        ->group(function () {
+                            Route::post("/", "index")->name("index");
+                            Route::put("/store", "store")->name("store");
+                            Route::put("/update/{union}", "update")->name("update");
+                            Route::delete("/destroy/{union}", "destroy")->name("destroy");
+                            Route::post("/options", "options")->name("options");
+
+
+                            Route::post("/{union}/division", "division")->name("division");
+                            Route::post("/{union}/district", "district")->name("district");
+                            Route::post("/{union}/upazila", "upazila")->name("upazila");
+                        });
+                }
+            });
     }
 }

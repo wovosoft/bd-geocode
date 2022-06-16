@@ -5,7 +5,6 @@ export default {
     themeConfig: {
         siteTitle: 'BKB Office Provider',
         nav: [
-            {text: 'Overview', link: '/why-separate-package'},
             {text: 'Configs', link: '/configuration'},
             {text: 'Complements & Complains', link: '/compliments-and-complains'}
         ],

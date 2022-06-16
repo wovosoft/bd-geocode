@@ -3,75 +3,80 @@
 First publish the configuration file
 
 ```shell
-php artisan vendor:publish --tag="bkb-offices.config"
+php artisan vendor:publish --tag="bd-geocode.config"
 ```
 
-The above command will create a copy of `bkb-offices.php` file in `config` directory.
+The above command will create a copy of `bd-geocode.php` file in `config` directory.
 
 ## Config contents
 
 ```php
 return [
-    "routes_enabled" => true,           //when true, routes will be registered automatically
-    "routes_middleware" => ["auth"],    // default list of middlewares for the routes
-    "views_enabled" => true             // when true, package views are registered automatically
+    "routes_enabled" => true,
+
+    /**
+     * These four config values are directly passed to default routes registration method, when
+     * routes_enabled = true
+     */
+    "division_controller" => DivisionController::class,
+    "district_controller" => DistrictController::class,
+    "upazila_controller" => UpazilaController::class,
+    "union_controller" => UnionController::class
 ];
 ```
 
-## Options `routes_enabled`
+## Routes
 
-When this option is set to `true`, default routes for the basic CRUD operations will be added automatically.
-Routes defined bellow will be added
+To define default routes for CURD operation use the line of code given bellow:
 
 ```php
-Route::controller(OfficeController::class)
-    ->prefix("offices")
-    ->name("offices.")
-    ->group(function () {
-        Route::put("store", "store")->name("store");
-        Route::put("update/{office}", "update")->name("update");
-        Route::post("/", "index")->name("index");
-        Route::delete("/delete/{office}", "delete")->name("delete");
-        Route::post("/options", "options")->name("options");
-    });
-
-Route::controller(OfficeTypeController::class)
-    ->prefix("office_types")
-    ->name("office_types.")
-    ->group(function () {
-        Route::put("store", "store")->name("store");
-        Route::put("update/{office}", "update")->name("update");
-        Route::post("/", "index")->name("index");
-        Route::delete("/delete/{office}", "delete")->name("delete");
-        Route::post("/options", "options")->name("options");
-        Route::post("/type/{office_type}/offices", "offices")->name("offices");
-    });
+\Wovosoft\BdGeocode\Facades\BdGeocode::routes();
 ```
 
-These routes are wrapped by the default middlewares defined in `config('bkb-offices.routes_middleware')`. The routes are
-loaded in packages `routes/web.php` file, where the main mechanism is done behind the scene. The package service
-provider is responsible for registering routes depending on the value of `config('bkb-offices.routes_enabled')`
-
-## Manual Registration of Routes
-
-First disable the option `routes_enabled` by setting the value to `false`.
-
-Now, inside projects `routes/web.php` or `routes/api.php` or wherever you want, do the following:
+You can wrap the routes with other conditions too.
 
 ```php
 use \Illuminate\Support\Facades\Route;
-use \Wovosoft\BkbOffices\Controllers\OfficeController;
-use \Wovosoft\BkbOffices\Facades\BkbOffices;
+use \Wovosoft\BdGeocode\Facades\BdGeocode;
 
-Route::controller(OfficeController::class)
-    ->middleware(["auth:web","auth:sanctum"])
-    ->prefix("bkb-offices")
-    ->group(function (){
-        BkbOffices::routes();
-    });
+Route::middleware(['auth:sanctum'])->group(function (){
+    BdGeocode::routes();
+});
 ```
 
-The main point is `BkbOffices::routes()`, after disabling default routes registration wrap this line of code by your
-desired route registration conditions.
+## Customizing default routes controller
 
-**UPCOMING: Details for other options**
+```php
+use \Illuminate\Support\Facades\Route;
+use \Wovosoft\BdGeocode\Facades\BdGeocode;
+
+Route::middleware(['auth:sanctum'])->group(function (){
+    BdGeocode::routes(
+        divisionController:\App\Http\Controllers\DivisionController::class
+    );
+});
+```
+
+The `BdGeocode::routes` method has four parameters.
+
+- divisionController  : `Wovosoft\BdGeocode\Http\Controllers\DivisionController`
+- districtController  : `Wovosoft\BdGeocode\Http\Controllers\DistrictController`
+- upazilaController   : `Wovosoft\BdGeocode\Http\Controllers\UpazilaController`
+- unionController     : `Wovosoft\BdGeocode\Http\Controllers\UnionController`
+
+left values are parameter name and right values are default values. You are free to change the controllers. If you
+set `null` for any controller, then routes with that controller won't be registered.
+
+When `routes_enabled` is `true`, by default following code is executed:
+
+```php
+\Wovosoft\BdGeocode\Facades\BdGeocode::routes(
+    divisionController: config("bd-geocode.division_controller"),
+    districtController: config("bd-geocode.district_controller"),
+    upazilaCOntroller: config("bd-geocode.upazila_controller"),
+    unionController: config("bd-geocode.union_controller")
+);
+```
+
+That means you can manage default controllers from here. Also, you can disable actions of some controllers from being
+registered by setting value to `null`.

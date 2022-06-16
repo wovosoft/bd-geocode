@@ -19,7 +19,7 @@ class BdGeocodeServiceProvider extends ServiceProvider
         // $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'wovosoft');
         // $this->loadViewsFrom(__DIR__.'/../resources/views', 'wovosoft');
         $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
-        // $this->loadRoutesFrom(__DIR__.'/routes.php');
+        $this->loadRoutesFrom(__DIR__ . '/../routes/web.php');
 
         // Publishing is only necessary when using the CLI.
         if ($this->app->runningInConsole()) {
@@ -63,6 +63,11 @@ class BdGeocodeServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__ . '/../config/bd-geocode.php' => config_path('bd-geocode.php'),
         ], 'bd-geocode.config');
+
+        // Publishing the migrations.
+        $this->publishes([
+            __DIR__ . '/../database/migrations' => base_path('database/migrations'),
+        ], 'bd-geocode.migrations');
 
         // Publishing the views.
         /*$this->publishes([
