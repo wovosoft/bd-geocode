@@ -13,7 +13,7 @@ use Wovosoft\BdGeocode\Models\Division;
 
 trait HasDivisionActions
 {
-    public function validate(Request $request): array
+    public function validate(Request $request, array $rules, array $messages = [], array $customAttributes = [])
     {
         return $request->validate([
             "name" => ["string", "required"],
