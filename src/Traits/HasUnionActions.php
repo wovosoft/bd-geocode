@@ -16,7 +16,7 @@ use Wovosoft\BdGeocode\Models\Upazila;
 
 trait HasUnionActions
 {
-    public function validate(Request $request, array $rules, array $messages = [], array $customAttributes = [])
+    public function validated(Request $request)
     {
         return $request->validate([
             "name" => ["string", "required"],
@@ -33,7 +33,7 @@ trait HasUnionActions
         DB::beginTransaction();
         try {
             $item = new Union();
-            $item->forceFill($this->validate($request))->saveOrFail();
+            $item->forceFill($this->validated($request))->saveOrFail();
             DB::commit();
             return response()->json([
                 "id" => $item->id,
@@ -50,8 +50,10 @@ trait HasUnionActions
     /**
      * @throws \Throwable
      */
-    public function update(Union $union, Request $request): JsonResponse
+    public function update(Request $request, $union): JsonResponse
     {
+        $union = Union::query()->findOrFail($union);
+
         DB::beginTransaction();
         try {
             $union->forceFill($this->validate($request))->saveOrFail();

@@ -14,7 +14,7 @@ use Wovosoft\BdGeocode\Models\Division;
 
 trait HasDistrictActions
 {
-    public function validate(Request $request, array $rules, array $messages = [], array $customAttributes = [])
+    public function validated(Request $request)
     {
         return $request->validate([
             "name" => ["string", "required"],
@@ -33,7 +33,7 @@ trait HasDistrictActions
         DB::beginTransaction();
         try {
             $item = new District();
-            $item->forceFill($this->validate($request))->saveOrFail();
+            $item->forceFill($this->validated($request))->saveOrFail();
             DB::commit();
             return response()->json([
                 "id" => $item->id,
@@ -50,11 +50,13 @@ trait HasDistrictActions
     /**
      * @throws \Throwable
      */
-    public function update(District $district, Request $request): JsonResponse
+    public function update( Request $request, $district,): JsonResponse
     {
+        $district= District::query()->findOrFail($district);
+        
         DB::beginTransaction();
         try {
-            $district->forceFill($this->validate($request))->saveOrFail();
+            $district->forceFill($this->validated($request))->saveOrFail();
             DB::commit();
             return response()->json([
                 "id" => $district->id,

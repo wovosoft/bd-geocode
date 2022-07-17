@@ -16,7 +16,7 @@ use Wovosoft\BdGeocode\Models\Upazila;
 
 trait HasUpazilaActions
 {
-    public function validate(Request $request, array $rules, array $messages = [], array $customAttributes = [])
+    public function validated(Request $request)
     {
         return $request->validate([
             "name" => ["string", "required"],
@@ -33,7 +33,7 @@ trait HasUpazilaActions
         DB::beginTransaction();
         try {
             $item = new Upazila();
-            $item->forceFill($this->validate($request))->saveOrFail();
+            $item->forceFill($this->validated($request))->saveOrFail();
             DB::commit();
             return response()->json([
                 "id" => $item->id,
@@ -50,11 +50,12 @@ trait HasUpazilaActions
     /**
      * @throws \Throwable
      */
-    public function update(Upazila $upazila, Request $request): JsonResponse
+    public function update(Request $request, $upazila): JsonResponse
     {
+        $upazila = Upazila::query()->findOrFail($upazila);
         DB::beginTransaction();
         try {
-            $upazila->forceFill($this->validate($request))->saveOrFail();
+            $upazila->forceFill($this->validated($request))->saveOrFail();
             DB::commit();
             return response()->json([
                 "id" => $upazila->id,

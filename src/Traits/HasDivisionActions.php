@@ -13,7 +13,7 @@ use Wovosoft\BdGeocode\Models\Division;
 
 trait HasDivisionActions
 {
-    public function validate(Request $request, array $rules, array $messages = [], array $customAttributes = [])
+    public function validated(Request $request)
     {
         return $request->validate([
             "name" => ["string", "required"],
@@ -30,7 +30,7 @@ trait HasDivisionActions
         DB::beginTransaction();
         try {
             $item = new Division();
-            $item->forceFill($this->validate($request))->saveOrFail();
+            $item->forceFill($this->validated($request))->saveOrFail();
             DB::commit();
             return response()->json([
                 "id" => $item->id,
@@ -47,11 +47,14 @@ trait HasDivisionActions
     /**
      * @throws \Throwable
      */
-    public function update(Division $division, Request $request): JsonResponse
+    public function update(Request $request, $division)
     {
+        $division = Division::query()->findOrFail($division);
         DB::beginTransaction();
         try {
-            $division->forceFill($this->validate($request))->saveOrFail();
+            $division
+                ->forceFill($this->validated($request))
+                ->saveOrFail();
             DB::commit();
             return response()->json([
                 "id" => $division->id,
