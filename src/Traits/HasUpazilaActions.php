@@ -16,7 +16,7 @@ use Wovosoft\BdGeocode\Models\Upazila;
 
 trait HasUpazilaActions
 {
-    private function validate(Request $request): array
+    public function validate(Request $request): array
     {
         return $request->validate([
             "name" => ["string", "required"],
