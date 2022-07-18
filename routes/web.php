@@ -1,4 +1,8 @@
 <?php
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+
 if (config("bd-geocode.routes_enabled")) {
     \Wovosoft\BdGeocode\Facades\BdGeocode::routes(
         divisionController: config("bd-geocode.division_controller"),

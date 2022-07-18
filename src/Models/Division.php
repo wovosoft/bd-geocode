@@ -27,6 +27,15 @@ class Division extends Model
         return parent::__get($key);
     }
 
+    public static function rules(): array
+    {
+        return [
+            "name" => ["string", "required"],
+            "bn_name" => ["string", "nullable"],
+            "url" => ["string", "nullable"]
+        ];
+    }
+
     public function toSearchableArray(): array
     {
         return [

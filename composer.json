@@ -4,19 +4,23 @@
     "license": "MIT",
     "authors": [
         {
-            "name": "Author Name",
-            "email": "author@email.com",
-            "homepage": "http://author.com"
+            "name": "Narayan Adhikary",
+            "email": "wovosoft@gmail.com",
+            "homepage": "https://github.com/wovosoft"
         }
     ],
     "homepage": "https://github.com/wovosoft/bd-geocode",
     "keywords": [
         "Laravel",
-        "BdGeocode"
+        "BdGeocode",
+        "Bangladesh",
+        "Divisions",
+        "Districts"
     ],
     "require": {
         "illuminate/support": "~9",
-        "laravel/scout": "^9.4"
+        "laravel/scout": "^9.4",
+        "wovosoft/laravel-common": ">=v1.0.0"
     },
     "require-dev": {
         "phpunit/phpunit": "~9.0",

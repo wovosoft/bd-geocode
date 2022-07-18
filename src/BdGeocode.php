@@ -5,6 +5,7 @@ namespace Wovosoft\BdGeocode;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Wovosoft\BdGeocode\Actions\Districts;
 use Wovosoft\BdGeocode\Actions\Divisions;
@@ -70,7 +71,8 @@ class BdGeocode
         ?string $unionController = UnionController::class
     ): void
     {
-        Route::prefix("/geocode")->name("geocode.")
+        Route::prefix("/geocode")
+            ->name("geocode.")
             ->group(function () use ($unionController, $upazilaController, $districtController, $divisionController) {
                 //name : geocode.divisions.{index,store,update,destroy,options,districts,upazilas,unions}
 
