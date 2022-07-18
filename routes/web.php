@@ -1,13 +1,7 @@
 <?php
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
+use Wovosoft\BdGeocode\Http\Controllers\DivisionController;
 
-if (config("bd-geocode.routes_enabled")) {
-    \Wovosoft\BdGeocode\Facades\BdGeocode::routes(
-        divisionController: config("bd-geocode.division_controller"),
-        districtController: config("bd-geocode.district_controller"),
-        upazilaController: config("bd-geocode.upazila_controller"),
-        unionController: config("bd-geocode.union_controller")
-    );
-}
+//if (config("bd-geocode.routes.enabled")) {
+//    \Wovosoft\BdGeocode\BdGeocode::routes();
+//}

@@ -13,6 +13,15 @@ class Upazila extends Model
 {
     use HasFactory, Searchable;
 
+    public static function rules(): array
+    {
+        return [
+            "name" => ["string", "required"],
+            "bn_name" => ["string", "nullable"],
+            "url" => ["string", "nullable"]
+        ];
+    }
+
     public function toSearchableArray(): array
     {
         return [

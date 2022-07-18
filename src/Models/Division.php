@@ -64,13 +64,14 @@ class Division extends Model
      * There is a possible better solution: https://github.com/staudenmeir/eloquent-has-many-deep
      * But, it is not yet tested by Me. So, it might take few time to apply it.
      */
+    //NOTE: Scoped binding not possible without proper relation
     public function unions(): Builder
     {
         return Union::query()
             ->join("upazilas", "upazilas.id", "=", "unions.upazila_id")
             ->join("districts", "districts.id", "=", "upazilas.district_id")
             ->join("divisions", "divisions.id", "=", "districts.division_id")
-            ->where("divisions.id", "=", $this->id);
+            ->where("divisions.id", "=", $this->id)
+            ->select(["unions.*"]);
     }
-
 }

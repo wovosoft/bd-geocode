@@ -8,87 +8,38 @@ use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use Wovosoft\BdGeocode\Assets\Data;
 use Wovosoft\BdGeocode\Models\District;
 use Wovosoft\BdGeocode\Models\Division;
 use Wovosoft\BdGeocode\Models\Union;
 use Wovosoft\BdGeocode\Models\Upazila;
+use Wovosoft\LaravelCommon\Helpers\Data;
 
 trait HasUnionActions
 {
-    public function validated(Request $request)
-    {
-        return $request->validate([
-            "name" => ["string", "required"],
-            "bn_name" => ["string", "nullable"],
-            "url" => ["string", "nullable"]
-        ]);
-    }
-
     /**
      * @throws \Throwable
      */
     public function store(Request $request): JsonResponse
     {
-        DB::beginTransaction();
-        try {
-            $item = new Union();
-            $item->forceFill($this->validated($request))->saveOrFail();
-            DB::commit();
-            return response()->json([
-                "id" => $item->id,
-                "message" => "Successfully Done"
-            ]);
-        } catch (\Throwable $exception) {
-            DB::rollBack();
-            return response()->json([
-                "message" => $exception->getMessage()
-            ], 403);
-        }
+        return Data::store(new Union(), $request);
     }
 
     /**
      * @throws \Throwable
      */
-    public function update(Request $request, $union): JsonResponse
+    public function update(Request $request, Union $union): JsonResponse
     {
-        $union = Union::query()->findOrFail($union);
-
-        DB::beginTransaction();
-        try {
-            $union->forceFill($this->validate($request))->saveOrFail();
-            DB::commit();
-            return response()->json([
-                "id" => $union->id,
-                "message" => "Successfully Done"
-            ]);
-        } catch (\Throwable $exception) {
-            DB::rollBack();
-            return response()->json([
-                "message" => $exception->getMessage()
-            ], 403);
-        }
+        return Data::store($union, $request);
     }
 
     public function options(Request $request): Collection|array
     {
-        return Data::totOptions(
-            Union::query()->select($request->input("cols") ?? ["id", "name", "bn_name", "url"]),
-            $request
-        );
+        return Data::options(Union::query(), $request);
     }
 
     public function index(Request $request): LengthAwarePaginator
     {
-        return Union::query()
-            ->when($request->input("filter"), function (Builder $builder, string $filter) {
-                $builder->search($filter);
-            })
-            ->select($request->input("cols") ?? ["*"])
-            ->paginate(
-                perPage: $request->input("per_page") ?? 15,
-                page: $request->input("current_page") ?? 1
-            );
+        return Data::paginate(Union::query(), $request);
     }
 
     /**
@@ -96,20 +47,7 @@ trait HasUnionActions
      */
     public function destroy(Union $union): JsonResponse
     {
-        DB::beginTransaction();
-        try {
-            $union->deleteOrFail();
-            DB::commit();
-            return response()->json([
-                "id" => $union?->id,
-                "message" => "Successfully Done"
-            ]);
-        } catch (\Throwable $exception) {
-            DB::rollBack();
-            return response()->json([
-                "message" => $exception->getMessage()
-            ], 403);
-        }
+        return Data::destroy($union);
     }
 
     public function division(Union $union): ?Division
@@ -125,5 +63,10 @@ trait HasUnionActions
     public function upazila(Union $union): ?Upazila
     {
         return $union->upazila;
+    }
+
+    public function single(Union $union): Union
+    {
+        return $union;
     }
 }

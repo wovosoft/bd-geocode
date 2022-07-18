@@ -3,10 +3,14 @@
 namespace Wovosoft\BdGeocode\Traits;
 
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Wovosoft\BdGeocode\Models\District;
 use Wovosoft\BdGeocode\Models\Division;
+use Wovosoft\BdGeocode\Models\Upazila;
 use Wovosoft\LaravelCommon\Helpers\Data;
 
 trait HasDivisionActions
@@ -16,13 +20,13 @@ trait HasDivisionActions
      */
     public function store(Request $request): JsonResponse
     {
-        return Data::store(Division::query(), $request);
+        return Data::store(new Division(), $request);
     }
 
     /**
      * @throws \Throwable
      */
-    public function update(Request $request, Division $division): JsonResponse
+    public function update(Division $division, Request $request): JsonResponse
     {
         return Data::store($division, $request);
     }
@@ -45,19 +49,60 @@ trait HasDivisionActions
         return Data::destroy($division);
     }
 
-    public function districts(Request $request, Division $division)
+    public function districts(Request $request, Division $division): Collection|array
+    {
+        return $division->districts()
+            ->when($request->input("filter"), function (Builder $builder, string $filter) use ($division) {
+                $builder
+                    ->where("districts.name", "like", "%$filter%")
+                    ->orWhere("districts.bn_name", "like", "%$filter%");
+            })
+            ->get();
+    }
+
+    public function upazilas(Request $request, Division $division): Collection
+    {
+        return $division->upazilas()
+            ->when($request->input("filter"), function (Builder $builder, string $filter) {
+                $builder
+                    ->where("upazilas.name", "like", "%$filter%")
+                    ->orWhere("upazilas.bn_name", "like", "%$filter%");
+            })
+            ->get();
+    }
+
+    public function unions(Request $request, Division $division): Collection
+    {
+        return $division->unions()
+            ->when($request->input("filter"), function (Builder $builder, string $filter) {
+                $builder
+                    ->where("unions.name", "like", "%$filter%")
+                    ->orWhere("unions.bn_name", "like", "%$filter%");
+            })
+            ->get();
+    }
+
+    public function single(Request $request, Division $division): Division
     {
         return $division;
-//        return Data::options($division->districts(), $request);
     }
 
-    public function upazilas(Division $division, Request $request): Collection
+    public function upazila(Request $request, Division $division, Upazila $upazila): Upazila
     {
-        return Data::options($division->upazilas(), $request);
+        return $upazila;
     }
 
-    public function unions(Division $division, Request $request): Collection
+    public function district(Request $request, Division $division, District $district): District
     {
-        return Data::options($division->unions(), $request);
+        return $district;
+    }
+
+    //due to limitation of multi-depth relations, this method is being implemented in a
+    //a different customized way.
+    public function union(Request $request, Division $division, $union): Model|Builder
+    {
+        return $division->unions()
+            ->where("unions.id", "=", $union)
+            ->firstOrFail();
     }
 }

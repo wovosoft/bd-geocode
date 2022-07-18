@@ -17,9 +17,16 @@ class BdGeocodeServiceProvider extends ServiceProvider
     public function boot(): void
     {
         // $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'wovosoft');
-        // $this->loadViewsFrom(__DIR__.'/../resources/views', 'wovosoft');
+        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'bd-geocode');
         $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
-        $this->loadRoutesFrom(__DIR__ . '/../routes/web.php');
+
+        /**
+         * Found an issue with registering routes from package.
+         * When routes are registered from package, model dependency injection doesn't work properly.
+         * I still didn't find the solution, so for now lets disabled the route registration from here
+         * and let the application itself register routes either in web.php or api.php
+         */
+//        $this->loadRoutesFrom(__DIR__ . '/../routes/web.php');
 
         // Publishing is only necessary when using the CLI.
         if ($this->app->runningInConsole()) {

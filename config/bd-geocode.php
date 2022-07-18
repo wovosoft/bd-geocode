@@ -4,7 +4,10 @@ use Wovosoft\BdGeocode\Http\Controllers\{DistrictController, DivisionController,
 
 
 return [
-    "routes_enabled" => true,
+    "routes" => [
+//        "enabled" => true,
+        "prefix" => "geocode",
+    ],
 
     /**
      * These four config values are directly passed to default routes registration method, when

@@ -5,14 +5,13 @@ namespace Wovosoft\BdGeocode;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Wovosoft\BdGeocode\Actions\Districts;
 use Wovosoft\BdGeocode\Actions\Divisions;
 use Wovosoft\BdGeocode\Actions\Unions;
 use Wovosoft\BdGeocode\Enums\Types;
 use Wovosoft\BdGeocode\Http\Controllers\DistrictController;
-use Wovosoft\BdGeocode\Http\Controllers\DivisionController;
+use Wovosoft\BdGeocode\Http\Controllers\GeocodeController;
 use Wovosoft\BdGeocode\Http\Controllers\UnionController;
 use Wovosoft\BdGeocode\Http\Controllers\UpazilaController;
 use Wovosoft\BdGeocode\Models\District;
@@ -54,103 +53,148 @@ class BdGeocode
         return new Unions();
     }
 
-    public function treeOf(Types $type, int $id): Model|Collection|Builder|array|null
+    public function leavesOf(Types $types, int $id): Model|Collection|Builder|array|null
     {
-        return match ($type) {
-            Types::Division => Division::with(["district.upazilas.unions"])->findOrFail($id),
+        return match ($types) {
+            Types::Division => Division::with(["districts.upazilas.unions"])->findOrFail($id),
             Types::District => District::with(["upazilas.unions"])->findOrFail($id),
             Types::Upazila => Upazila::with(["unions"])->findOrFail($id),
             Types::Union => Union::query()->findOrFail($id),
         };
     }
 
-    public static function routes(
-        ?string $divisionController = DivisionController::class,
-        ?string $districtController = DistrictController::class,
-        ?string $upazilaController = UpazilaController::class,
-        ?string $unionController = UnionController::class
-    ): void
+    public function rootOf(Types $types, int $id): Model|Collection|Builder|array|null
     {
-        Route::prefix("/geocode")
-            ->name("geocode.")
-            ->group(function () use ($unionController, $upazilaController, $districtController, $divisionController) {
-                //name : geocode.divisions.{index,store,update,destroy,options,districts,upazilas,unions}
+        return match ($types) {
+            Types::Division => Division::findOrFail($id),
+            Types::District => District::with(["division"])->findOrFail($id),
+            Types::Upazila => Upazila::with(["district.division"])->findOrFail($id),
+            Types::Union => Union::query()->with(["upazila.district.division"])->findOrFail($id),
+        };
+    }
 
-                if ($divisionController) {
-                    Route::controller($divisionController)
-                        ->prefix("divisions")
-                        ->name("divisions.")
-                        ->group(function () {
-                            Route::post("/", "index")->name("index");
-                            Route::put("/store", "store")->name("store");
-                            Route::put("/update/{division}", "update")->name("update");
-                            Route::delete("/destroy/{division}", "destroy")->name("destroy");
-                            Route::post("/options", "options")->name("options");
-                            Route::post("/{division}/districts", "districts")->name("districts");
-                            Route::post("/{division}/upazilas", "upazilas")->name("upazilas");
-                            Route::post("/{division}/unions", "unions")->name("unions");
+    public static function routes(): void
+    {
+        Route::prefix(config("bd-geocode.routes.prefix"))
+            ->name(config("bd-geocode.routes.prefix") . ".")
+            ->group(function () {
+                Route::post("leaves-of/{types}/{id}", [GeocodeController::class, "leavesOf"])->name("leaves-of");
+                Route::post("root-of/{types}/{id}", [GeocodeController::class, "rootOf"])->name("root-of");
 
-                        });
-                }
+                static::divisionRoutes();
+                static::districtRoutes();
+                static::upazilaRoutes();
+                static::unionRoutes();
+            });
+    }
 
-                //name : geocode.districts.{index,store,update,destroy,options,upazilas,unions,division}
-                if ($districtController) {
-                    Route::controller($districtController)
-                        ->prefix("districts")
-                        ->name("districts.")
-                        ->group(function () {
-                            Route::post("/", "index")->name("index");
-                            Route::put("/store", "store")->name("store");
-                            Route::put("/update/{district}", "update")->name("update");
-                            Route::delete("/destroy/{district}", "destroy")->name("destroy");
-                            Route::post("/options", "options")->name("options");
+    public static function divisionRoutes(): void
+    {
+        Route::prefix("divisions")
+            ->name("divisions.")
+            ->controller(config("bd-geocode.division_controller"))
+            ->group(function () {
+                Route::post("/", "index")->name("index");
+                Route::put("/store", "store")->name("store");
+                Route::post("/options", "options")->name("options");
 
+                Route::prefix("{division}")->group(function () {
+                    //single division
+                    Route::post("/", "single")->name("single");
+                    Route::put("/update", "update")->name("update");
+                    Route::delete("/destroy", "destroy")->name("destroy");
 
-                            Route::post("/{district}/upazilas", "upazilas")->name("upazilas");
-                            Route::post("/{district}/unions", "unions")->name("unions");
-                            Route::post("/{district}/division", "division")->name("division");
+                    //districts, upazilas and unions directly under a certain division
+                    Route::post("districts", "districts")->name("districts");
+                    Route::post("upazilas", "upazilas")->name("upazilas");
+                    Route::post("unions", "unions")->name("unions");
 
-                        });
-                }
+                    //scoped districts, upazilas and unions of a division
+                    Route::scopeBindings()->group(function () {
+                        Route::post("districts/{district}", "district")->name("single-district");
+                        Route::post("upazilas/{upazila}", "upazila")->name("single-upazila");
+                    });
+                    //scoped binding not possible, because proper relation is not made division--->union
+                    Route::post("unions/{union}", "union")->name("single-union");
+                });
+            });
+    }
 
-                //name : geocode.upazilas.{index,store,update,destroy,options,division,district,unions}
-                if ($upazilaController) {
-                    Route::controller($upazilaController)
-                        ->prefix("upazilas")
-                        ->name("upazilas.")
-                        ->group(function () {
-                            Route::post("/", "index")->name("index");
-                            Route::put("/store", "store")->name("store");
-                            Route::put("/update/{upazila}", "update")->name("update");
-                            Route::delete("/destroy/{upazila}", "destroy")->name("destroy");
-                            Route::post("/options", "options")->name("options");
+    public static function districtRoutes(): void
+    {
+        Route::prefix("districts")
+            ->name("districts.")
+            ->controller(DistrictController::class)
+            ->group(function () {
+                Route::post("/", "index")->name("index");
+                Route::put("/store", "store")->name("store");
+                Route::post("/options", "options")->name("options");
 
+                Route::prefix("{district}")->group(function () {
+                    Route::post("/", "single")->name("single");
+                    Route::put("/update", "update")->name("update");
+                    Route::delete("/destroy", "destroy")->name("destroy");
 
-                            Route::post("/{upazila}/division", "division")->name("division");
-                            Route::post("/{upazila}/district", "district")->name("district");
-                            Route::post("/{upazila}/unions", "unions")->name("unions");
+                    Route::post("/upazilas", "upazilas")->name("upazilas");
+                    Route::post("/unions", "unions")->name("unions");
+                    Route::post("/division", "division")->name("division");
 
-                        });
-                }
+                    //scoped upazilas, unions
+                    Route::scopeBindings()->group(function () {
+                        Route::post("/upazilas/{upazila}", "upazila")->name("upazila");
+                        Route::post("/unions/{union}", "union")->name("union");
+                    });
+                });
+            });
+    }
 
-                //name : geocode.unions.{index,store,update,destroy,options,unions,district,division}
-                if ($unionController) {
-                    Route::controller($unionController)
-                        ->prefix("unions")
-                        ->name("unions.")
-                        ->group(function () {
-                            Route::post("/", "index")->name("index");
-                            Route::put("/store", "store")->name("store");
-                            Route::put("/update/{union}", "update")->name("update");
-                            Route::delete("/destroy/{union}", "destroy")->name("destroy");
-                            Route::post("/options", "options")->name("options");
+    public static function upazilaRoutes(): void
+    {
+        Route::prefix("upazilas")
+            ->name("upazilas.")
+            ->controller(UpazilaController::class)
+            ->group(function () {
+                Route::post("/", "index")->name("index");
+                Route::put("/store", "store")->name("store");
+                Route::post("/options", "options")->name("options");
 
+                Route::prefix("{upazila}")
+                    ->group(function () {
+                        Route::post("/", "single")->name("single");
+                        Route::put("/update", "update")->name("update");
+                        Route::delete("/destroy", "destroy")->name("destroy");
 
-                            Route::post("/{union}/division", "division")->name("division");
-                            Route::post("/{union}/district", "district")->name("district");
-                            Route::post("/{union}/upazila", "upazila")->name("upazila");
-                        });
-                }
+                        Route::post("/unions", "unions")->name("unions");
+                        Route::post("/district", "district")->name("district");
+                        Route::post("/division", "division")->name("division");
+
+                        Route::post("/unions/{union}", "union")
+                            ->scopeBindings()
+                            ->name("union");
+                    });
+            });
+    }
+
+    public static function unionRoutes(): void
+    {
+        Route::prefix("unions")
+            ->name("unions.")
+            ->controller(UnionController::class)
+            ->group(function () {
+                Route::post("/", "index")->name("index");
+                Route::put("/store", "store")->name("store");
+                Route::post("/options", "options")->name("options");
+
+                Route::prefix("{union}")
+                    ->group(function () {
+                        Route::post("/", "single")->name("single");
+                        Route::put("/update", "update")->name("update");
+                        Route::delete("/destroy", "destroy")->name("destroy");
+
+                        Route::post("/upazila", "upazila")->name("upazila");
+                        Route::post("/district", "district")->name("district");
+                        Route::post("/division", "division")->name("division");
+                    });
             });
     }
 }

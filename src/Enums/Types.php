@@ -2,10 +2,10 @@
 
 namespace Wovosoft\BdGeocode\Enums;
 
-enum Types
+enum Types: string
 {
-    case Division;
-    case District;
-    case Upazila;
-    case Union;
+    case Division = "division";
+    case District = "district";
+    case Upazila = "upazila";
+    case Union = "union";
 }
