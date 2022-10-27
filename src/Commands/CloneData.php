@@ -4,6 +4,8 @@ namespace Wovosoft\BdGeocode\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
+use ZipArchive;
 
 class CloneData extends Command
 {
@@ -31,10 +33,23 @@ class CloneData extends Command
     public function handle(): int
     {
         if (File::exists(storage_path("app/public/bangladesh-geocode"))) {
-            shell_exec("rm -rf " . storage_path("app/public/bangladesh-geocode"));
+            File::deleteDirectory(storage_path("app/public/bangladesh-geocode"));
         }
 
-        shell_exec("git clone https://github.com/nuhil/bangladesh-geocode.git " . storage_path("app/public/bangladesh-geocode"));
+        if (!File::exists(storage_path("app/public/bangladesh-geocode"))) {
+            File::makeDirectory(storage_path("app/public/bangladesh-geocode"));
+        }
+
+        $file = file_get_contents("https://github.com/nuhil/bangladesh-geocode/archive/refs/heads/master.zip");
+        file_put_contents(storage_path("app/public/bangladesh-geocode/bangladesh-geocode.zip"), $file);
+
+        $zip = new ZipArchive();
+
+        $zipFile = $zip->open(storage_path("app/public/bangladesh-geocode/bangladesh-geocode.zip"));
+        if ($zipFile === TRUE) {
+            $zip->extractTo(storage_path("app/public/bangladesh-geocode"));
+            $zip->close();
+        }
         return 0;
     }
 }

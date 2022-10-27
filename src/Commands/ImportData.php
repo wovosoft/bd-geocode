@@ -40,19 +40,19 @@ class ImportData extends Command
         //merging all files in a tree structured array/object
 
         $this->divisions = json_decode(
-            File::get(storage_path("app/public/bangladesh-geocode/divisions/divisions.json"))
+            File::get(storage_path("app/public/bangladesh-geocode/bangladesh-geocode-master/divisions/divisions.json"))
         )[2]->data;
 
         $this->districts = json_decode(
-            File::get(storage_path("app/public/bangladesh-geocode/districts/districts.json"))
+            File::get(storage_path("app/public/bangladesh-geocode/bangladesh-geocode-master/districts/districts.json"))
         )[2]->data;
 
         $this->upazilas = json_decode(
-            File::get(storage_path("app/public/bangladesh-geocode/upazilas/upazilas.json"))
+            File::get(storage_path("app/public/bangladesh-geocode/bangladesh-geocode-master/upazilas/upazilas.json"))
         )[2]->data;
 
         $this->unions = json_decode(
-            File::get(storage_path("app/public/bangladesh-geocode/unions/unions.json"))
+            File::get(storage_path("app/public/bangladesh-geocode/bangladesh-geocode-master/unions/unions.json"))
         )[2]->data;
 
         foreach ($this->divisions as $division) {
