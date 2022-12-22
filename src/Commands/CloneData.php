@@ -4,7 +4,6 @@ namespace Wovosoft\BdGeocode\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Storage;
 use ZipArchive;
 
 class CloneData extends Command

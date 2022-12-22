@@ -7,6 +7,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
+use Wovosoft\BdGeocode\Helpers\Util;
 use Wovosoft\BdGeocode\Models\District;
 use Wovosoft\BdGeocode\Models\Division;
 use Wovosoft\BdGeocode\Models\Union;
@@ -15,8 +16,6 @@ use Wovosoft\LaravelCommon\Helpers\Data;
 
 trait HasDistrictActions
 {
-
-
     /**
      * @throws \Throwable
      */
@@ -55,9 +54,14 @@ trait HasDistrictActions
     {
         return $district->upazilas()
             ->when($request->input("filter"), function (Builder $builder, string $filter) {
-                $builder
-                    ->where("upazilas.name", "like", "%$filter%")
-                    ->orWhere("upazilas.bn_name", "like", "%$filter%");
+                $upazilas = Upazila::getTableName();
+
+                Util::colSearch(
+                    builder: $builder,
+                    filter: $filter,
+                    where: ["$upazilas.name"],
+                    orWhere: ["$upazilas.bn_name"]
+                );
             })
             ->get();
     }
@@ -66,9 +70,14 @@ trait HasDistrictActions
     {
         return $district->unions()
             ->when($request->input("filter"), function (Builder $builder, string $filter) {
-                $builder
-                    ->where("unions.name", "like", "%$filter%")
-                    ->orWhere("unions.bn_name", "like", "%$filter%");
+                $unions = Union::getTableName();
+
+                Util::colSearch(
+                    builder: $builder,
+                    filter: $filter,
+                    where: ["$unions.name"],
+                    orWhere: ["$unions.bn_name"]
+                );
             })
             ->get();
     }

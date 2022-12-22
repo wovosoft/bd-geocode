@@ -32,27 +32,28 @@ class ImportData extends Command
      * Execute the console command.
      *
      * @return int
-     * @throws FileNotFoundException
+     * @throws FileNotFoundException|\Throwable
      */
     public function handle(): int
     {
 
+        $path = "app/public/bangladesh-geocode/bangladesh-geocode-master";
         //merging all files in a tree structured array/object
 
         $this->divisions = json_decode(
-            File::get(storage_path("app/public/bangladesh-geocode/bangladesh-geocode-master/divisions/divisions.json"))
+            File::get(storage_path("$path/divisions/divisions.json"))
         )[2]->data;
 
         $this->districts = json_decode(
-            File::get(storage_path("app/public/bangladesh-geocode/bangladesh-geocode-master/districts/districts.json"))
+            File::get(storage_path("$path/districts/districts.json"))
         )[2]->data;
 
         $this->upazilas = json_decode(
-            File::get(storage_path("app/public/bangladesh-geocode/bangladesh-geocode-master/upazilas/upazilas.json"))
+            File::get(storage_path("$path/upazilas/upazilas.json"))
         )[2]->data;
 
         $this->unions = json_decode(
-            File::get(storage_path("app/public/bangladesh-geocode/bangladesh-geocode-master/unions/unions.json"))
+            File::get(storage_path("$path/unions/unions.json"))
         )[2]->data;
 
         foreach ($this->divisions as $division) {
@@ -109,6 +110,9 @@ class ImportData extends Command
     }
 
 
+    /**
+     * @throws \Throwable
+     */
     private function insertUnions($data_id, $model_id)
     {
         $unions = Arr::where($this->unions, fn($value, $key) => $value->upazilla_id === $data_id);

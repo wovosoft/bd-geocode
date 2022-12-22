@@ -3,15 +3,14 @@
 namespace Wovosoft\BdGeocode\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
-use Laravel\Scout\Searchable;
 
-class District extends Model
+class District extends BaseModel
 {
-    use HasFactory, Searchable;
+    use HasFactory;
+
 
     public static function rules(): array
     {

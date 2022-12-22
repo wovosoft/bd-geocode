@@ -5,8 +5,11 @@ use Wovosoft\BdGeocode\Http\Controllers\{DistrictController, DivisionController,
 
 return [
     "routes" => [
-//        "enabled" => true,
+        "enabled" => false,
         "prefix" => "geocode",
+    ],
+    "table" => [
+        "prefix" => "geocode_"
     ],
 
     /**

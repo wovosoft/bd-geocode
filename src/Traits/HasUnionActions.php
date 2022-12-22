@@ -2,12 +2,10 @@
 
 namespace Wovosoft\BdGeocode\Traits;
 
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
 use Wovosoft\BdGeocode\Models\District;
 use Wovosoft\BdGeocode\Models\Division;
 use Wovosoft\BdGeocode\Models\Union;

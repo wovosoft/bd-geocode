@@ -7,12 +7,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
-use Laravel\Scout\Searchable;
 
 
-class Division extends Model
+class Division extends BaseModel
 {
-    use HasFactory, Searchable;
+    use HasFactory;
 
     /**
      * When asks for magic prop 'unions' the builder provider by unions() will be resolved.
@@ -67,11 +66,37 @@ class Division extends Model
     //NOTE: Scoped binding not possible without proper relation
     public function unions(): Builder
     {
+        $divisions = Division::getTableName();
+        $districts = District::getTableName();
+        $upazilas = Upazila::getTableName();
+        $unions = Union::getTableName();
+
         return Union::query()
-            ->join("upazilas", "upazilas.id", "=", "unions.upazila_id")
-            ->join("districts", "districts.id", "=", "upazilas.district_id")
-            ->join("divisions", "divisions.id", "=", "districts.division_id")
-            ->where("divisions.id", "=", $this->id)
-            ->select(["unions.*"]);
+            ->join(
+                $upazilas,
+                "$upazilas.id",
+                "=",
+                "$unions.upazila_id"
+            )
+            ->join(
+                $districts,
+                "$districts.id",
+                "=",
+                "$upazilas.district_id"
+            )
+            ->join(
+                $divisions,
+                "$divisions.id",
+                "=",
+                "$districts.division_id"
+            )
+            ->where(
+                "$divisions.id",
+                "=",
+                $this->id
+            )
+            ->select([
+                "$unions.*"
+            ]);
     }
 }

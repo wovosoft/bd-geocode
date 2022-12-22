@@ -8,8 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Wovosoft\BdGeocode\Helpers\Util;
 use Wovosoft\BdGeocode\Models\District;
 use Wovosoft\BdGeocode\Models\Division;
+use Wovosoft\BdGeocode\Models\Union;
 use Wovosoft\BdGeocode\Models\Upazila;
 use Wovosoft\LaravelCommon\Helpers\Data;
 
@@ -53,9 +55,14 @@ trait HasDivisionActions
     {
         return $division->districts()
             ->when($request->input("filter"), function (Builder $builder, string $filter) use ($division) {
-                $builder
-                    ->where("districts.name", "like", "%$filter%")
-                    ->orWhere("districts.bn_name", "like", "%$filter%");
+                $districts = District::getTableName();
+
+                Util::colSearch(
+                    builder: $builder,
+                    filter: $filter,
+                    where: ["$districts.name"],
+                    orWhere: ["$districts.bn_name"]
+                );
             })
             ->get();
     }
@@ -64,9 +71,14 @@ trait HasDivisionActions
     {
         return $division->upazilas()
             ->when($request->input("filter"), function (Builder $builder, string $filter) {
-                $builder
-                    ->where("upazilas.name", "like", "%$filter%")
-                    ->orWhere("upazilas.bn_name", "like", "%$filter%");
+                $upazilas = Upazila::getTableName();
+
+                Util::colSearch(
+                    builder: $builder,
+                    filter: $filter,
+                    where: ["$upazilas.name"],
+                    orWhere: ["$upazilas.bn_name"]
+                );
             })
             ->get();
     }
@@ -75,9 +87,13 @@ trait HasDivisionActions
     {
         return $division->unions()
             ->when($request->input("filter"), function (Builder $builder, string $filter) {
-                $builder
-                    ->where("unions.name", "like", "%$filter%")
-                    ->orWhere("unions.bn_name", "like", "%$filter%");
+                $unions = Union::getTableName();
+                Util::colSearch(
+                    builder: $builder,
+                    filter: $filter,
+                    where: ["$unions.name"],
+                    orWhere: ["$unions.bn_name"]
+                );
             })
             ->get();
     }
@@ -97,12 +113,14 @@ trait HasDivisionActions
         return $district;
     }
 
-    //due to limitation of multi-depth relations, this method is being implemented in a
+    //due to limitation of multi-depth relations, this method is being implemented in
     //a different customized way.
     public function union(Request $request, Division $division, $union): Model|Builder
     {
+        $unions = Union::getTableName();
+
         return $division->unions()
-            ->where("unions.id", "=", $union)
+            ->where("$unions.id", "=", $union)
             ->firstOrFail();
     }
 }

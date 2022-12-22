@@ -3,6 +3,8 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Wovosoft\BdGeocode\Models\District;
+use Wovosoft\BdGeocode\Models\Division;
 
 return new class extends Migration {
     /**
@@ -10,11 +12,18 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('districts', function (Blueprint $table) {
+        Schema::create(District::getTableName(), function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger("division_id");
+            $table
+                ->foreignId("division_id")
+                ->nullable()
+                ->references("id")
+                ->on(Division::getTableName())
+                ->onUpdate("cascade")
+                ->onDelete("set null");
+
             $table->string("name");
             $table->string("bn_name")->nullable();
             $table->string("lat")->nullable();
@@ -29,8 +38,8 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
-        Schema::dropIfExists('districts');
+        Schema::dropIfExists(District::getTableName());
     }
 };

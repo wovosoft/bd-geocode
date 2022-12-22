@@ -3,14 +3,12 @@
 namespace Wovosoft\BdGeocode\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOneThrough;
-use Laravel\Scout\Searchable;
 
-class Union extends Model
+class Union extends BaseModel
 {
-    use HasFactory, Searchable;
+    use HasFactory;
 
     public static function rules(): array
     {

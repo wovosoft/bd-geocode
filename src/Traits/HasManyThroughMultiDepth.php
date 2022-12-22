@@ -8,11 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 trait HasManyThroughMultiDepth
 {
     /**
-     * @param Builder|Model|string $related
+     * @param string|Builder|Model $related
      * @param array $through
      * @return mixed
      */
-    public function hasManyThroughMultiDepth($related, array $through)
+    public function hasManyThroughMultiDepth(Model|Builder|string $related, array $through): mixed
     {
         $query = $related::query();
 

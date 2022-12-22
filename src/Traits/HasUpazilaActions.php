@@ -7,6 +7,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
+use Wovosoft\BdGeocode\Helpers\Util;
 use Wovosoft\BdGeocode\Models\District;
 use Wovosoft\BdGeocode\Models\Division;
 use Wovosoft\BdGeocode\Models\Union;
@@ -63,8 +64,14 @@ trait HasUpazilaActions
     {
         return $upazila->unions()
             ->when($request->input("filter"), function (Builder $builder, string $filter) {
-                $builder->where("unions.name", "like", "%$filter%")
-                    ->orWhere("unions.bn_name", "like", "%$filter%");
+                $unions = Union::getTableName();
+
+                Util::colSearch(
+                    builder: $builder,
+                    filter: $filter,
+                    where: ["$unions.name"],
+                    orWhere: ["$unions.bn_name"]
+                );
             })
             ->get();
     }
