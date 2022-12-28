@@ -11,7 +11,6 @@ class District extends BaseModel
 {
     use HasFactory;
 
-
     public static function rules(): array
     {
         return [
