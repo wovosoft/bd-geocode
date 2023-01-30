@@ -19,7 +19,7 @@
     ],
     "require": {
         "illuminate/support": "~9",
-        "wovosoft/laravel-common": ">=1.0.5",
+        "wovosoft/laravel-common": "*",
         "ext-zip": "*"
     },
     "require-dev": {
