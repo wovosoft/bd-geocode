@@ -1,6 +1,11 @@
 <?php
 
-use Wovosoft\BdGeocode\Http\Controllers\{DistrictController, DivisionController, UnionController, UpazilaController};
+use Wovosoft\BdGeocode\Http\Controllers\{
+    DistrictController,
+    DivisionController,
+    UnionController,
+    UpazilaController
+};
 
 
 return [
