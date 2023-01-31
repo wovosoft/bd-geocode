@@ -5,8 +5,10 @@ use Wovosoft\BdGeocode\Http\Controllers\{DistrictController, DivisionController,
 
 return [
     "database" => [
-        "connection" => config("database.default")
+        "connection" => config("database.default"),
+        "migrations" => true
     ],
+    "views" => true,
     "routes" => [
         "enabled" => false,
         "prefix" => "geocode",

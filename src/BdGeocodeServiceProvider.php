@@ -17,8 +17,13 @@ class BdGeocodeServiceProvider extends ServiceProvider
     public function boot(): void
     {
         // $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'wovosoft');
-        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'bd-geocode');
-        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
+        if (config("bd-geocode.views")) {
+            $this->loadViewsFrom(__DIR__ . '/../resources/views', 'bd-geocode');
+        }
+
+        if (config("bd-geocode.database.migrations")) {
+            $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
+        }
 
         /**
          * Found an issue with registering routes from package.
