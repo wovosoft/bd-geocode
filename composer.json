@@ -18,13 +18,7 @@
         "Districts"
     ],
     "require": {
-        "illuminate/support": "~9",
-        "wovosoft/laravel-common": "*",
-        "ext-zip": "*"
-    },
-    "require-dev": {
-        "phpunit/phpunit": "~9.0",
-        "orchestra/testbench": "~7"
+        "laravel/framework": "^10.0"
     },
     "autoload": {
         "psr-4": {
