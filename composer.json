@@ -17,9 +17,6 @@
         "Divisions",
         "Districts"
     ],
-    "require": {
-        "laravel/framework": "^10.0"
-    },
     "autoload": {
         "psr-4": {
             "Wovosoft\\BdGeocode\\": "src/"
