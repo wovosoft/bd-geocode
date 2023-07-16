@@ -31,7 +31,9 @@ class BdGeocodeServiceProvider extends ServiceProvider
          * I still didn't find the solution, so for now lets disabled the route registration from here
          * and let the application itself register routes either in web.php or api.php
          */
-//        $this->loadRoutesFrom(__DIR__ . '/../routes/web.php');
+        if (config("bd-geocode.routes.enabled")) {
+            $this->loadRoutesFrom(__DIR__ . '/../routes/web.php');
+        }
 
         // Publishing is only necessary when using the CLI.
         if ($this->app->runningInConsole()) {
