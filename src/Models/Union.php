@@ -48,8 +48,8 @@ class Union extends BaseModel
         );
     }
 
-    public function division(): BelongsTo
-    {
-        return $this->district?->division();
-    }
+//    public function division(): BelongsTo
+//    {
+//        return $this->district?->division();
+//    }
 }
